@@ -1,0 +1,76 @@
+// grammar;
+
+// Whitespace & Comments
+WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
+
+COMMENT = _{ "//" ~ (!("\n" | "\r") ~ ANY)* }
+
+// Keywords & Operators
+enum = _{ "enum" }
+define = _{ "define" }
+protocol = _{ "protocol" }
+when = _{ "when" }
+choice = _{ "choice" }
+based = _{ "based" }
+on = _{ "on" }
+endian = _{ "endian" }
+padding = _{ "padding" }
+to = _{ "to" }
+in = _{ "in" }
+covers = _{ "covers" }
+length = _{ "length" }
+context_length = _{ "context_length" }
+TLV = _{ "TLV" }
+default = _{ "default" }
+
+// Primitives
+NUMBER = @{ ASCII_DIGIT+ }
+STRING = @{ "\"" ~ (!"\"" ~ ANY)* ~ "\"" }
+IDENTIFIER = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+
+// Protocol Definition Parts
+definition_block = { define ~ "{" ~ definition_item* ~ "}" }
+definition_item = { type_definition ~ ";" | enum_definition ~ ";" | structure_definition ~ ";" }
+
+type_definition = { IDENTIFIER ~ "=" ~ type_expression }
+enum_definition = { IDENTIFIER ~ "=" ~ underlying_type ~ enum ~ "{" ~ enum_item* ~ "}" }
+structure_definition = { IDENTIFIER ~ "(" ~ IDENTIFIER ~ ":" ~ IDENTIFIER ~ ")" ~ "=" ~ choice_expression }
+
+enum_item = { NUMBER ~ ":" ~ STRING ~ ";" }
+
+type_expression = { array_expression | primitive_expression }
+array_expression = { primitive_expression ~ "[" ~ expression ~ "]" }
+primitive_expression = { IDENTIFIER }
+
+choice_expression = { choice ~ based ~ on ~ IDENTIFIER ~ "{" ~ choice_item+ ~ "}" }
+choice_item = { STRING ~ ":" ~ IDENTIFIER ~ structure_body | default ~ ":" ~ IDENTIFIER ~ array_expression }
+
+// Structure Definitions
+structure_body = { "{" ~ structure_item* ~ "}" }
+structure_item = { 
+    IDENTIFIER ~ ":" ~ type_expression ~ ("=" ~ expression)? ~ ";"
+  | IDENTIFIER ~ ":" ~ type_expression ~ endianness ~ ";" 
+}
+
+protocol_definition = { protocol ~ IDENTIFIER ~ "{" ~ protocol_item* ~ "}" }
+protocol_item = { IDENTIFIER ~ ":" ~ type_expression ~ ";" | IDENTIFIER ~ ":" ~ type_expression ~ endianness ~ ";" | conditional_expression }
+
+conditional_expression = { (IDENTIFIER | IDENTIFIER ~ "(" ~ IDENTIFIER ~ ")") ~ when ~ "{" ~ condition_block+ ~ "}" }
+condition_block = { IDENTIFIER ~ "=" ~ (NUMBER | STRING) ~ ":" ~ type_expression ~ ";" }
+
+
+// Primary tokens
+primary = _{ NUMBER | IDENTIFIER }
+
+// Expressions
+expression = { primary ~ (operation ~ primary)* }
+operation = _{ "+" | "-" | "*" | "/" }
+
+endianness = { "big" | "little" }
+underlying_type = { IDENTIFIER }
+
+// Entry Rule
+file = { SOI ~ (definition_block | protocol_definition)* ~ EOI }
+
+
+

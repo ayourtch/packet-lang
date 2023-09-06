@@ -1,0 +1,61 @@
+define {
+    ip_address = u8[4];
+    
+    ip_protocol_enum = u8 enum {
+        1: "ICMP";
+        6: "TCP";
+        17: "UDP";
+        // ... other protocol values
+    };
+    
+    // IP Option Structures
+    end_of_option_list = {
+        type: u8 = 0x00;
+    };
+    
+    no_operation = {
+        type: u8 = 0x01;
+    };
+
+    record_route = {
+        type: u8 = 0x07;
+        length: u8;
+        pointer: u8;
+        route_data: [ip_address; (length - 3) / 4];
+    };
+
+    timestamp = {
+        type: u8 = 0x44;
+        length: u8;
+        pointer: u8;
+        overflow: u8:4;
+        flag: u8:4;
+        timestamp_data: [u32; (length - 4) / 4];
+    };
+
+    loose_source_route = {
+        type: u8 = 0x83;
+        length: u8;
+        pointer: u8;
+        route_data: [ip_address; (length - 3) / 4];
+    };
+}
+
+protocol IPv4 {
+    // ... (the rest remains unchanged from the previous definition)
+    options: when {
+        ihl > 5: [
+            choice {
+                end_of_option_list;
+                no_operation;
+                record_route;
+                timestamp;
+                loose_source_route;
+                // ... other potential options
+            }; 
+            (ihl-5)*4
+        ];  // This captures the idea that if IHL > 5, options are present.
+    };
+    payload: u8[:total_length - ihl*4];
+}
+

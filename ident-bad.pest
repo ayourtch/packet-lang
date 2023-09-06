@@ -1,0 +1,45 @@
+// Whitespace and comments
+WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+COMMENT = _{ "//" ~ (!("\n") ~ ANY)* }
+
+// Basic elements
+IDENTIFIER = @{ ASCII_ALPHABETIC ~ (ASCII_ALPHABETIC | ASCII_DIGIT | "_")* }
+STRING = @{ "\"" ~ (!("\"") ~ ANY)* ~ "\"" }
+NUMBER = @{ ASCII_DIGIT+ }
+
+// Data types
+DATA_TYPE = { "u8" | "u16" | "u32" | "u64" }
+
+// Main structures
+file = { SOI ~ (define_block | protocol_block)* ~ EOI }
+define_block = { "define" ~ "{" ~ definition_item* ~ "}" }
+protocol_block = { "protocol" ~ IDENTIFIER ~ "{" ~ protocol_item* ~ "}" }
+
+// Definition items within a define block
+definition_item = _{
+    array_definition
+    | enumeration_definition
+    | structure_definition
+    | assignment_definition
+}
+
+array_definition = { IDENTIFIER ~ "=" ~ DATA_TYPE ~ "[" ~ expression ~ "]" ~ ";" }
+enumeration_definition = { IDENTIFIER ~ "=" ~ DATA_TYPE ~ "enum" ~ "{" ~ enumeration_item+ ~ "}" ~ ";" }
+enumeration_item = { NUMBER ~ ":" ~ STRING ~ ";"? }
+structure_definition = { IDENTIFIER ~ "=" ~ "{" ~ structure_body ~ "}" ~ ";" }
+assignment_definition = { IDENTIFIER ~ "=" ~ expression ~ ";" }
+
+structure_body = { (assignment_definition | array_definition)* }
+
+// Protocol items within a protocol block
+protocol_item = { assignment_definition | array_definition | choice_definition }
+choice_definition = { IDENTIFIER ~ "=" ~ "choice" ~ "based" ~ "on" ~ IDENTIFIER ~ "{" ~ choice_item+ ~ "}" ~ ";" }
+choice_item = { STRING ~ ":" ~ IDENTIFIER ~ structure_body | "default" ~ ":" ~ IDENTIFIER ~ array_expression }
+
+// Expressions
+expression = { primary_expression ~ (operation ~ primary_expression)* }
+primary_expression = { NUMBER | IDENTIFIER | "(" ~ expression ~ ")" }
+operation = { "+" | "-" | "*" | "/" | "%" }
+
+// ... other rules might be added based on the DSL's expansion and further details.
+

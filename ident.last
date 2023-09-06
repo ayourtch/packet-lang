@@ -1,0 +1,39 @@
+WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
+COMMENT = _{ "//" ~ (!"\n" ~ ANY)* }
+
+IDENTIFIER = @{ ('a'..'z' | 'A'..'Z') ~ ('a'..'z' | 'A'..'Z' | '0'..'9' | "_")* }
+STRING = @{ "\"" ~ (!"\"" ~ ANY)* ~ "\"" }
+NUMBER = @{ ("-" | "+")? ~ ('0'..'9')+ }
+HEX_NUMBER = @{ "0x" ~ ('0'..'9' | 'a'..'f' | 'A'..'F')+ }
+DATA_TYPE = @{ !("enum" | "choice") ~ IDENTIFIER ~ ("[" ~ expression ~ "]")? }
+
+file = { SOI ~ WHITESPACE* ~ "define" ~ "{" ~ definition* ~ "}" ~ WHITESPACE* ~ EOI }
+
+definition = _{ definition_item ~ ";" }
+definition_item = _{ 
+    assignment_definition 
+  | enum_definition 
+  | choice_definition 
+  | structure_definition 
+  | array_definition 
+}
+
+assignment_definition = { IDENTIFIER ~ "=" ~ DATA_TYPE }
+array_definition = { IDENTIFIER ~ "=" ~ DATA_TYPE ~ "[" ~ expression ~ "]" }
+enum_definition = { DATA_TYPE ~ "enum" ~ "{" ~ (enum_item ~ ";")+ ~ "}" }
+choice_definition = { DATA_TYPE ~ "choice" ~ "based" ~ "on" ~ IDENTIFIER ~ "{" ~ (choice_item ~ ";")+ ~ "}" }
+structure_definition = { IDENTIFIER ~ "=" ~ "{" ~ structure_body ~ "}" }
+
+enum_item = { HEX_NUMBER | NUMBER ~ ":" ~ STRING }
+choice_item = { STRING ~ ":" ~ IDENTIFIER ~ structure_body | "default" ~ ":" ~ IDENTIFIER }
+structure_body = { (typed_assignment_definition | assignment_definition | array_definition)* }
+typed_assignment_definition = { IDENTIFIER ~ ":" ~ DATA_TYPE ~ "=" ~ expression ~ ";" }
+
+expression = { value ~ (operation ~ value)* }
+value = _{ HEX_NUMBER | NUMBER | IDENTIFIER }
+operation = _{ "+" | "-" | "*" | "/" | ":" }
+
+// All these definitions ensure that whitespace or comments can occur between any tokens, 
+// but are not considered as actual parsable output. This helps in ignoring and handling spaces, 
+// tabs, or any kind of comments that might be present in the DSL.
+
