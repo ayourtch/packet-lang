@@ -284,6 +284,47 @@ protocol EthernetII {
 }
 
 
+protocol DNS {
+    id: u16;
+    flags: u16; // FIXME: layout the flags
+    qdcount: u16; // Number of entries in the question section
+    ancount: u16; // Number of resource records in the answer section
+    nscount: u16; // Number of name server resource records in the authority records section
+    arcount: u16; // Number of resource records in the additional records section
+    
+    questions: [Question; qdcount];
+    answers: [ResourceRecord; ancount];
+    authorities: [ResourceRecord; nscount];
+    additionals: [ResourceRecord; arcount];
+}
+
+protocol Question {
+    qname: DomainName;
+    qtype: u16;
+    qclass: u16;
+}
+
+protocol ResourceRecord {
+    name: DomainName;
+    type: u16;
+    class: u16;
+    ttl: u32;
+    rdlength: u16;
+    rdata: [u8; rdlength]; // This can be further detailed based on type
+}
+
+protocol DomainName {
+    labels: [Label];
+    terminator: u8 = 0;  // Indicates end of domain name
+}
+
+protocol Label {
+    length: u8;
+    data: [u8; length];
+}
+
+
+
 // foo: padding to <type>
 // foo: length in <unit> covers (field, field ...)
 
