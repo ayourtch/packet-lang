@@ -118,7 +118,7 @@ protocol Attribute {
           length: u8;
           value: StringUTF8;
        }
-       "User-Password": {
+       2: {
           length: u8;
           value: [u8];
        }
