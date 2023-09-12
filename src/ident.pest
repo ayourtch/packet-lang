@@ -52,7 +52,7 @@ multi_condition_type_item = { expression ~ ":" ~ IDENTIFIER? ~ structure_body }
 
 conditional_block = { when ~ expression ~ "{" ~ structure_item+ ~ "}" ~ ";" }
 multi_conditional_block = { when ~ "{" ~ multi_condition_item+ ~ "}" ~ ";" }
-multi_condition_item = { expression ~ ":" ~ structure_body }
+multi_condition_item = { expression ~ ":" ~ IDENTIFIER? ~ structure_body }
 
 structure_body = { "{" ~ structure_item* ~ "}" }
 

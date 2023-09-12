@@ -145,7 +145,7 @@ protocol UsingCustomEnum {
     message_type: custom_enum;  // This field can take values "CustomValue1" or "CustomValue2".
 
     when {
-        message_type == "CustomValue1": {
+        message_type == "CustomValue1": blah {
             request_id: u8;
         }
         message_type == "CustomValue2": {
