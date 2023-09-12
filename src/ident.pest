@@ -38,7 +38,7 @@ simple_array_data_type = { simple_data_type ~ "[" ~ expression ~ "]" }
 array_data_type = { generic_array_data_type | open_array_data_type | simple_array_data_type }
 
 enum_data_type = { enum ~ underlying_type ~ "{" ~ enum_item* ~ "}" }
-underlying_type = { IDENTIFIER }
+underlying_type = { simple_data_type }
 enum_item = { numeric_value ~ ":" ~ STRING ~ ";" }
 
 choice_data_type = { choice ~ (simple_choice_type | conditional_choice_type) }

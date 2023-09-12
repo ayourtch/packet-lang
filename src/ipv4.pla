@@ -136,7 +136,7 @@ protocol Attribute {
 }
 
 define {
-    custom_enum = enum u8 {
+    custom_enum = enum u8:2 {
         1: "CustomValue1";
         2: "CustomValue2";
     };
