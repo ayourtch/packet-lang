@@ -24,7 +24,9 @@ default = _{ "default" }
 NUMBER = @{ ASCII_DIGIT+ }
 STRING = @{ "\"" ~ (!"\"" ~ ANY)* ~ "\"" }
 IDENTIFIER = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
-HEX_NUMBER = @{ "0x" ~ ('0'..'9' | 'a'..'f' | 'A'..'F')+ }
+HEX_NUMBER = @{ ('0'..'9' | 'a'..'f' | 'A'..'F')+ }
+BIN_NUMBER = @{ ('0'..'1')+ }
+BASE_N_NUMBER = { "0" ~ ("x" ~ HEX_NUMBER | "b" ~ BIN_NUMBER) }
 BASE_TYPE = @{ "u8" | "u16" | "u32"| "u64" | "u128" | "i8" | "i16" | "i32" | "i64" | "i128" }
 
 simple_data_type = { !("enum" | "choice" | "when") ~ (BASE_TYPE ~ bitwidth? ~ endianness? | IDENTIFIER) }
@@ -103,8 +105,8 @@ term = _{ factor ~ (operation ~ factor )* }
 factor = _{ value | "(" ~ expression ~ ")" }
 
 // expression = { value ~ (operation ~ value)* }
-value = _{ HEX_NUMBER | NUMBER | IDENTIFIER | STRING }
-numeric_value = _{ HEX_NUMBER | NUMBER }
+value = _{ numeric_value | IDENTIFIER | STRING }
+numeric_value = _{ BASE_N_NUMBER | NUMBER }
 operation = _{ "+" | "-" | "*" | "/" | "<=" | ">=" | "<" | ">" | "==" }
 
 

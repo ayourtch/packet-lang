@@ -323,6 +323,27 @@ protocol Label {
     data: [u8; length];
 }
 
+protocol DomainName {
+    components: [NameComponent];
+}
+
+protocol NameComponent {
+    type: enum u8:2 {
+       0b00: "Label";
+       0b01: "b01";
+       0b10: "b10";
+       0b11: "Pointer";
+    };
+    data: choice based on type {
+       "Label": label {
+         length: u8:6;
+         data: [u8; length];
+       };
+       "Pointer": pointer {
+         offset: u16:14;
+       };
+    };
+}
 
 
 // foo: padding to <type>
