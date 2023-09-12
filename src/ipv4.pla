@@ -1,5 +1,6 @@
 define {
     simple_type = u8;
+    endian_type = u32 little-endian;
     simple_type = u8:3;
     my_array_type = [u8; 23];
     bla = { };
@@ -252,6 +253,7 @@ define {
 }
 
 protocol IPv6 {
+    // specifying the bitlengths explicitly makes the values bit-packed
     version: u8:4 = 6;
     traffic_class: u8:8;
     flow_label: u32:20;
