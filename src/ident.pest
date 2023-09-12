@@ -30,11 +30,13 @@ IDENTIFIER = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 HEX_NUMBER = @{ "0x" ~ ('0'..'9' | 'a'..'f' | 'A'..'F')+ }
 BASE_TYPE = @{ "u8" | "u16" | "u32"| "u64" | "u128" | "i8" | "i16" | "i32" | "i64" | "i128" }
 
-simple_data_type = @{ !("enum" | "choice" | "when") ~ (BASE_TYPE ~ bitwidth? | IDENTIFIER) }
+simple_data_type = { !("enum" | "choice" | "when") ~ (BASE_TYPE ~ bitwidth? | IDENTIFIER) }
 
-array_data_type = { "[" ~ DATA_TYPE ~ ";" ~ expression ~ "]" }
+generic_array_data_type = { "[" ~ DATA_TYPE ~ ";" ~ expression ~ "]" }
 open_array_data_type = { "[" ~ DATA_TYPE ~ "]" }
 simple_array_data_type = { simple_data_type ~ "[" ~ expression ~ "]" }
+
+array_data_type = { generic_array_data_type | open_array_data_type | simple_array_data_type }
 
 enum_data_type = { enum ~ underlying_type ~ "{" ~ enum_item* ~ "}" }
 underlying_type = { IDENTIFIER }
@@ -73,9 +75,7 @@ structure_item = {
 
 
 DATA_TYPE = { 
-   simple_array_data_type | 
    parametrized_data_type |
-   open_array_data_type | 
    array_data_type | 
    simple_data_type | 
    enum_data_type | 

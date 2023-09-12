@@ -1,7 +1,7 @@
 define {
     simple_type = u8;
     simple_type = u8:3;
-    array_type = [u8; 23];
+    my_array_type = [u8; 23];
     bla = { };
     Funky = {
        simple: u16;
