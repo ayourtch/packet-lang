@@ -1,7 +1,23 @@
 define {
+    simple_type = u8;
+    simple_type = u8:3;
+    array_type = [u8; 23];
+    bla = { };
+    Funky = {
+       simple: u16;
+      second: u32;
+       constraint: u8 = 2;
+       thurd: [u8; 4];
+    };
+
+    ip_address = u8[4];
+
+}
+
+define {
     ip_address = u8[4];
     
-    ip_protocol_enum = u8 enum {
+    ip_protocol_enum = enum u8 {
         1: "ICMP";
         6: "TCP";
         17: "UDP";
@@ -37,14 +53,27 @@ define {
         type: u8 = 0x83;
         length: u8;
         pointer: u8;
-        route_data: [ip_address; (length - 3) / 4];
+        // route_data: [ip_address; (length - 3) / 4];
+        route_data: ip_address[(length - 3) / 4];
     };
 }
 
 protocol IPv4 {
-    // ... (the rest remains unchanged from the previous definition)
-    options: when {
-        ihl > 5: [
+    version: u8:4;
+    ihl: u8:4;
+    dscp: u8:6;
+    ecn: u8:2;
+    total_length: u16;
+    identification: u16;
+    flags: u8:3;
+    fragment_offset: u16:13;
+    ttl: u8;
+    protocol: ip_protocol_enum;
+    header_checksum: u16;
+    source_ip: ip_address;
+    destination_ip: ip_address;
+    when ihl > 5 {
+            options: [
             choice {
                 end_of_option_list;
                 no_operation;
@@ -54,8 +83,121 @@ protocol IPv4 {
                 // ... other potential options
             }; 
             (ihl-5)*4
-        ];  // This captures the idea that if IHL > 5, options are present.
+        ];
+        bla: u8;
     };
-    payload: u8[:total_length - ihl*4];
+    payload: u8[total_length - ihl*4];
 }
+
+
+protocol RADIUS {
+    code: enum u8 {
+        1: "Access-Request";
+        2: "Access-Accept";
+        3: "Access-Reject";
+        4: "Accounting-Request";
+        5: "Accounting-Response";
+        // ... other RADIUS message types
+    };
+    identifier: u8;
+    length: u16;
+    authenticator: [u8; 16];
+    attributes: [Attribute];
+    // ... rest of the RADIUS fields
+}
+
+protocol Attribute {
+    type: enum u8 {
+       1: "User-Name";
+       2: "User-Password";
+       4: "NAS-IP-Address";
+    };
+    choice based on type {
+       "User-Name": user {
+          length: u8;
+          value: StringUTF8;
+       }
+       "User-Password": pass {
+          length: u8;
+          value: [u8];
+       }
+       "NAS-IP-Address": nas {
+        length: u8 = 6;  // Always 6 for IP address
+        value: IPAddress;
+       }
+    }
+
+    choice based on type {
+      "value 1": some {
+         length: u32;
+       }
+    }
+}
+
+define {
+    custom_enum = enum u8 {
+        1: "CustomValue1";
+        2: "CustomValue2";
+    };
+}
+
+protocol UsingCustomEnum {
+    message_type: custom_enum;  // This field can take values "CustomValue1" or "CustomValue2".
+
+    when {
+        message_type == "CustomValue1": {
+            request_id: u8;
+        }
+        message_type == "CustomValue2": {
+            response_code: u8;
+        }
+    };
+}
+
+protocol Simple {
+    byte_field: u8;
+    custom_bit_field: u8:3;
+}
+
+
+protocol ICMPv4 {
+    type: u8;
+    code: u8;
+    message: when {
+        type == 0: {  // Echo Reply
+            identifier: u16;
+            sequence_number: u16;
+        }
+        type == 8: {  // Echo Request
+            identifier: u16;
+            sequence_number: u16;
+        }
+        // ... other ICMP types
+    };
+}
+
+protocol ICMPv4 {
+    type: enum u8 {
+       0: "Echo Reply";
+       8: "Echo Request";
+    }; 
+    code: u8;
+    message: choice based on type {
+        "Echo Reply": rep {
+            identifier: u16;
+            sequence_number: u16;
+        };
+        "Echo Request": req {
+            identifier: u16;
+            sequence_number: u16;
+        };
+        // ... other ICMP types
+    };
+}
+
+
+
+
+// foo: padding to <type>
+// foo: length in <unit> covers (field, field ...)
 

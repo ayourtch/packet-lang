@@ -1,3 +1,6 @@
+protocol bla {
+}
+
 define {
     ip_address = u8[4];
     
