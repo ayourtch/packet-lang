@@ -40,7 +40,7 @@ array_data_type = { generic_array_data_type | open_array_data_type | simple_arra
 
 enum_data_type = { enum ~ underlying_type ~ "{" ~ enum_item* ~ "}" }
 underlying_type = { IDENTIFIER }
-enum_item = { NUMBER ~ ":" ~ STRING ~ ";" }
+enum_item = { numeric_value ~ ":" ~ STRING ~ ";" }
 
 choice_data_type = { choice ~ (simple_choice_type | conditional_choice_type) }
 simple_choice_type = { "{" ~ !("based") ~ (DATA_TYPE ~ ";")+ ~ "}" }
@@ -105,6 +105,7 @@ factor = _{ value | "(" ~ expression ~ ")" }
 
 // expression = { value ~ (operation ~ value)* }
 value = _{ HEX_NUMBER | NUMBER | IDENTIFIER | STRING }
+numeric_value = _{ HEX_NUMBER | NUMBER }
 operation = _{ "+" | "-" | "*" | "/" | "<=" | ">=" | "<" | ">" | "==" }
 
 bitwidth = { ":" ~ NUMBER }

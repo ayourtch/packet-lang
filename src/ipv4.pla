@@ -263,6 +263,23 @@ protocol IPv6 {
     data: extension_header(next_header);
 }
 
+define {
+    mac_address = u8[6];
+    ether_type_enum = enum u16 {
+        0x0800: "IPv4";
+        0x0806: "ARP";
+        0x86DD: "IPv6";
+        // ... other EtherType values
+    };
+}
+
+protocol EthernetII {
+    destination_mac: mac_address;
+    source_mac: mac_address;
+    ether_type: ether_type_enum;
+    payload: [u8; length_from_frame - 18];  // Assuming length_from_frame is provided externally
+    fcs: u32;  // Frame Check Sequence
+}
 
 
 // foo: padding to <type>
