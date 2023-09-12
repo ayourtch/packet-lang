@@ -49,7 +49,7 @@ simple_choice_type = { "{" ~ !("based") ~ (DATA_TYPE ~ ";")+ ~ "}" }
 parametrized_data_type = { IDENTIFIER ~ "(" ~ IDENTIFIER ~ ("," ~ IDENTIFIER)* ~ ")" }
 
 conditional_choice_type = { based ~ on ~ IDENTIFIER ~ "{" ~ (choice_item ~ ";")+ ~ "}" }
-choice_item = { STRING ~ ":" ~ IDENTIFIER ~ structure_body | default ~ ":" ~ IDENTIFIER? ~ structure_body }
+choice_item = { STRING ~ ":" ~ IDENTIFIER? ~ structure_body | default ~ ":" ~ IDENTIFIER? ~ structure_body }
 
 choice_block = { choice ~ based ~ on ~ IDENTIFIER ~ "{" ~ (choice_block_item)+ ~ "}"  }
 choice_block_item = { STRING ~ ":" ~ IDENTIFIER? ~ structure_body | default ~ ":" ~ IDENTIFIER ~ structure_body }

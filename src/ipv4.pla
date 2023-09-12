@@ -339,7 +339,7 @@ protocol NameComponent {
          length: u8:6;
          data: [u8; length];
        };
-       "Pointer": pointer {
+       "Pointer": {
          offset: u16:14;
        };
     };
