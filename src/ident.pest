@@ -33,8 +33,8 @@ simple_data_type = { !("enum" | "choice" | "when") ~ (BASE_TYPE ~ bitwidth? ~ en
 bitwidth = { ":" ~ NUMBER }
 endianness = { "big-endian" | "little-endian" }
 
-generic_array_data_type = { "[" ~ DATA_TYPE ~ ";" ~ expression ~ "]" }
-open_array_data_type = { "[" ~ DATA_TYPE ~ "]" }
+generic_array_data_type = { "[" ~ gen_data_type ~ ";" ~ expression ~ "]" }
+open_array_data_type = { "[" ~ gen_data_type ~ "]" }
 simple_array_data_type = { simple_data_type ~ "[" ~ expression ~ "]" }
 
 array_data_type = { generic_array_data_type | open_array_data_type | simple_array_data_type }
@@ -44,7 +44,7 @@ underlying_type = { simple_data_type }
 enum_item = { numeric_value ~ ":" ~ STRING ~ ";" }
 
 choice_data_type = { choice ~ (simple_choice_type | conditional_choice_type) }
-simple_choice_type = { "{" ~ !("based") ~ (DATA_TYPE ~ ";")+ ~ "}" }
+simple_choice_type = { "{" ~ !("based") ~ (gen_data_type ~ ";")+ ~ "}" }
 
 parametrized_data_type = { IDENTIFIER ~ "(" ~ IDENTIFIER ~ ("," ~ IDENTIFIER)* ~ ")" }
 
@@ -64,10 +64,10 @@ multi_condition_item = { expression ~ ":" ~ IDENTIFIER? ~ structure_body }
 
 structure_body = { "{" ~ structure_item* ~ "}" }
 
-typed_assignment_item = { IDENTIFIER ~ ":" ~ DATA_TYPE ~ "=" ~ expression ~ ";" }
-regular_item = { IDENTIFIER ~ ":" ~ DATA_TYPE ~ ";" }
+typed_assignment_item = { IDENTIFIER ~ ":" ~ gen_data_type ~ "=" ~ expression ~ ";" }
+regular_item = { IDENTIFIER ~ ":" ~ gen_data_type ~ ";" }
 
-structure_item = { 
+structure_item = {
   regular_item |
   typed_assignment_item |
   conditional_block |
@@ -76,27 +76,27 @@ structure_item = {
 }
 
 
-DATA_TYPE = { 
+gen_data_type = {
    parametrized_data_type |
-   array_data_type | 
-   simple_data_type | 
-   enum_data_type | 
-   choice_data_type | 
+   array_data_type |
+   simple_data_type |
+   enum_data_type |
+   choice_data_type |
    conditional_data_type |
-   structure_body 
+   structure_body
 }
 
 // Protocol Definition Parts
 definition_block = { define ~ "{" ~ definition* ~ "}" }
 
 definition = _{ definition_item ~ ";" }
-definition_item = _{ 
-    type_definition 
+definition_item = _{
+    type_definition
 }
 
-type_definition = { IDENTIFIER ~ type_parameters? ~ "=" ~ DATA_TYPE }
+type_definition = { IDENTIFIER ~ type_parameters? ~ "=" ~ gen_data_type }
 type_parameters = { "(" ~ type_parameter ~ ("," ~ type_parameter)* ~ ")" }
-type_parameter = { IDENTIFIER ~ ":" ~ DATA_TYPE }
+type_parameter = { IDENTIFIER ~ ":" ~ gen_data_type }
 
 
 protocol_definition = { protocol ~ IDENTIFIER ~ structure_body }
