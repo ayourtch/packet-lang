@@ -50,7 +50,7 @@ conditional_choice_type = { based ~ on ~ IDENTIFIER ~ "{" ~ (choice_item ~ ";")+
 choice_item = { STRING ~ ":" ~ IDENTIFIER ~ structure_body | default ~ ":" ~ IDENTIFIER? ~ structure_body }
 
 choice_block = { choice ~ based ~ on ~ IDENTIFIER ~ "{" ~ (choice_block_item)+ ~ "}"  }
-choice_block_item = { STRING ~ ":" ~ IDENTIFIER ~ structure_body | default ~ ":" ~ IDENTIFIER ~ structure_body }
+choice_block_item = { STRING ~ ":" ~ IDENTIFIER? ~ structure_body | default ~ ":" ~ IDENTIFIER ~ structure_body }
 
 conditional_data_type = { when ~ "{" ~ multi_condition_type_item+ ~ "}" }
 multi_condition_type_item = { expression ~ ":" ~ IDENTIFIER? ~ structure_body }
