@@ -12,6 +12,7 @@ struct IdentParser;
 fn main() {
 let ipv4_def = include_str!("ipv4.pla");
     let pairs = IdentParser::parse(Rule::file, ipv4_def).unwrap_or_else(|e| panic!("{}: {:#?}", &e, &e));
+    println!("{:#?}", &pairs);
 
     // Because ident_list is silent, the iterator will contain idents
     for pair in pairs {

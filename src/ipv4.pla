@@ -164,7 +164,7 @@ protocol ICMPv4 {
     type: u8;
     code: u8;
     message: when {
-        type == 0: {  // Echo Reply
+        type == 0: rep {  // Echo Reply
             identifier: u16;
             sequence_number: u16;
         }

@@ -48,7 +48,7 @@ choice_block = { choice ~ based ~ on ~ IDENTIFIER ~ "{" ~ (choice_block_item)+ ~
 choice_block_item = { STRING ~ ":" ~ IDENTIFIER ~ structure_body | default ~ ":" ~ IDENTIFIER ~ structure_body }
 
 conditional_data_type = { when ~ "{" ~ multi_condition_type_item+ ~ "}" }
-multi_condition_type_item = { expression ~ ":" ~ structure_body }
+multi_condition_type_item = { expression ~ ":" ~ IDENTIFIER? ~ structure_body }
 
 conditional_block = { when ~ expression ~ "{" ~ structure_item+ ~ "}" ~ ";" }
 multi_conditional_block = { when ~ "{" ~ multi_condition_item+ ~ "}" ~ ";" }
@@ -92,13 +92,13 @@ type_definition = { IDENTIFIER ~ "=" ~ DATA_TYPE }
 
 protocol_definition = { protocol ~ IDENTIFIER ~ structure_body }
 
-expression = _{ term ~ (operation ~ term)* }
+expression = { term ~ (operation ~ term)* }
 term = _{ factor ~ (operation ~ factor )* }
 factor = _{ value | "(" ~ expression ~ ")" }
 
 // expression = { value ~ (operation ~ value)* }
 value = _{ HEX_NUMBER | NUMBER | IDENTIFIER | STRING }
-operation = _{ "+" | "-" | "*" | "/" | ":" | "<=" | ">=" | "<" | ">" | "==" }
+operation = _{ "+" | "-" | "*" | "/" | "<=" | ">=" | "<" | ">" | "==" }
 
 bitwidth = { ":" ~ NUMBER }
 endianness = { "big" | "little" }
