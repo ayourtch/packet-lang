@@ -8,25 +8,29 @@ use pest::Parser;
 #[grammar = "ident.pest"]
 struct IdentParser;
 
+use pest::iterators::Pair;
+
+fn dump_pair(pair: &Pair<'_, Rule>, indent: usize) {
+        println!("{}Rule:    {:?}", " ".repeat(indent), pair.as_rule());
+        // println!("{}Span:    {:?}", " ".repeat(indent), pair.as_span());
+        let text = pair.as_str();
+        if text.len() < 40 {
+           println!("{}Text:    {}", " ".repeat(indent), pair.as_str());
+        }
+        for inner_pair in pair.clone().into_inner() {
+            dump_pair(&inner_pair, indent+1);
+        }
+}
+
 
 fn main() {
 let ipv4_def = include_str!("ipv4.pla");
     let pairs = IdentParser::parse(Rule::file, ipv4_def).unwrap_or_else(|e| panic!("{}: {:#?}", &e, &e));
-    println!("{:#?}", &pairs);
+    // println!("{:#?}", &pairs);
+    for pair in pairs.clone() {
+        dump_pair(&pair, 0);
+    }
 
-    // Because ident_list is silent, the iterator will contain idents
-    for pair in pairs {
-        // A pair is a combination of the rule which matched and a span of input
-        println!("Rule:    {:?}", pair.as_rule());
-        println!("Span:    {:?}", pair.as_span());
-        println!("Text:    {}", pair.as_str());
-
-        // A pair can be converted to an iterator of the tokens which make it up:
-        for inner_pair in pair.into_inner() {
-            println!(" inner: {:?}", inner_pair.as_rule());
-            for inner_pair in inner_pair.into_inner() {
-                println!(" inner: {:?}", inner_pair.as_rule());
-            }
             /*
             match inner_pair.as_rule() {
                 Rule::alpha => println!("Letter:  {}", inner_pair.as_str()),
@@ -34,6 +38,4 @@ let ipv4_def = include_str!("ipv4.pla");
                 _ => unreachable!()
             };
             */
-        }
-    }
 }
