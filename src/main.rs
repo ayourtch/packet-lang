@@ -11,11 +11,12 @@ struct IdentParser;
 use pest::iterators::Pair;
 
 fn dump_pair(pair: &Pair<'_, Rule>, indent: usize) {
-        println!("{}Rule:    {:?}", " ".repeat(indent), pair.as_rule());
         // println!("{}Span:    {:?}", " ".repeat(indent), pair.as_span());
         let text = pair.as_str();
         if text.len() < 40 {
-           println!("{}Text:    {}", " ".repeat(indent), pair.as_str());
+           println!("{}{:?} '{}'", " ".repeat(indent), pair.as_rule(), text);
+        } else {
+           println!("{}{:?}", " ".repeat(indent), pair.as_rule());
         }
         for inner_pair in pair.clone().into_inner() {
             dump_pair(&inner_pair, indent+1);

@@ -23,7 +23,7 @@ default = _{ "default" }
 // Primitives
 NUMBER = @{ ASCII_DIGIT+ }
 STRING = @{ "\"" ~ (!"\"" ~ ANY)* ~ "\"" }
-IDENTIFIER = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+IDENTIFIER = @{ (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")* }
 HEX_NUMBER = @{ ('0'..'9' | 'a'..'f' | 'A'..'F')+ }
 BIN_NUMBER = @{ ('0'..'1')+ }
 BASE_N_NUMBER = { "0" ~ ("x" ~ HEX_NUMBER | "b" ~ BIN_NUMBER) }
@@ -67,14 +67,16 @@ structure_body = { "{" ~ structure_item* ~ "}" }
 typed_assignment_item = { IDENTIFIER ~ ":" ~ gen_data_type ~ "=" ~ expression ~ ";" }
 regular_item = { IDENTIFIER ~ ":" ~ gen_data_type ~ ";" }
 
+padding_item = { IDENTIFIER ~ ":" ~ padding ~ to ~ gen_data_type ~ ";" }
+
 structure_item = {
   regular_item |
+  padding_item |
   typed_assignment_item |
   conditional_block |
   multi_conditional_block |
   choice_block
 }
-
 
 gen_data_type = {
    parametrized_data_type |

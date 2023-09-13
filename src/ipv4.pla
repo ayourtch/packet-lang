@@ -15,6 +15,11 @@ define {
 
 }
 
+protocol Foo {
+   start: u8:3;
+   pad0: padding to u32;
+}
+
 define {
     ip_address = u8[4];
     
@@ -346,6 +351,5 @@ protocol NameComponent {
 }
 
 
-// foo: padding to <type>
 // foo: length in <unit> covers (field, field ...)
 
